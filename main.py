@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="블링블링 무한 투두 & 캐릭터 꾸미기 💖", page_icon="🦄", layout="centered")
+st.set_page_config(to do list 💖", page_icon="🦄", layout="centered")
 
 st.markdown("""
     <style>
@@ -20,13 +20,13 @@ st.markdown("""
     .character-box {
         background-color: #fff0f6;
         border-radius: 20px;
-        padding: 15px;
+        padding: 20px;
         text-align: center;
         border: 3px dashed #ffadd2;
     }
     </style>
     <div class="title-font">✨🦄 환상의 블링블링 목표 & 캐릭터 🦄✨</div>
-    <div class="subtitle">할 일을 완료하고 코인을 모아 나만의 캐릭터를 꾸며보세요! 🌟💖🎀</div>
+    <div class="subtitle">할 일을 완료하고 코인을 모아 전설의 아바타를 완성하세요! 🌟💖🎀</div>
     <br>
 """, unsafe_allow_html=True)
 
@@ -38,27 +38,45 @@ if "inventory" not in st.session_state:
     st.session_state.inventory = ["기본 옷 👕"]
 if "equipped" not in st.session_state:
     st.session_state.equipped = "기본 옷 👕"
+if "avatar" not in st.session_state:
+    st.session_state.avatar = "🐱 아기 고양이"
+
+AVATARS = {
+    "🐱 아기 고양이": "🐱",
+    "🐶 활발한 강아지": "🐶",
+    "🐰 깡총 토끼": "🐰",
+    "🧸 귀여운 곰돌이": "🧸",
+    "🦊 영리한 여우": "🦊"
+}
 
 SHOP_ITEMS = {
     "👑 반짝이는 왕관": {"price": 100, "icon": "👑"},
-    "👗 무지개 드레스": {"price": 150, "icon": "👗"},
-    "🕶️ 힙스터 선글라스": {"price": 80, "icon": "🕶️"},
-    "🪄 마법 요술봉": {"price": 200, "icon": "🪄"},
-    "🎒 귀여운 책가방": {"price": 120, "icon": "🎒"},
-    "🎀 러블리 리본": {"price": 90, "icon": "🎀"},
-    "🦊 푹신한 여우 귀": {"price": 130, "icon": "🦊"},
-    "🚀 우주 비행 수트": {"price": 300, "icon": "🚀"}
+    "🕶️ 힙스터 선글라스": {"price": 150, "icon": "🕶️"},
+    "🎒 귀여운 책가방": {"price": 200, "icon": "🎒"},
+    "🎀 러블리 리본": {"price": 250, "icon": "🎀"},
+    "🪄 마법 요술봉": {"price": 300, "icon": "🪄"},
+    "🚀 우주 비행 수트": {"price": 500, "icon": "🚀"},
+    "🔥 [최종목표] 원피스 해적왕 루피": {"price": 2000, "icon": "👒🍖"},
+    "⚡ [최종목표] 나루토 호카게 전설": {"price": 2500, "icon": "🍥🌀"},
+    "⚔️ [최종목표] 귀멸의 칼날 귀살대": {"price": 3000, "icon": "⚔️👘"}
 }
 
 equipped_icon = SHOP_ITEMS.get(st.session_state.equipped, {}).get("icon", "👕") if st.session_state.equipped != "기본 옷 👕" else "👕"
+current_avatar_icon = AVATARS.get(st.session_state.avatar, "🐱")
 
-st.sidebar.header("💖 내 정보 & 캐릭터 💖")
+st.sidebar.header("💖 내 정보 & 아바타 💖")
 st.sidebar.markdown(f"### 💰 **{st.session_state.coins} 코인** 보유 중!")
+
+st.sidebar.subheader("👤 아바타 선택")
+selected_avatar = st.sidebar.selectbox("나만의 기본 아바타를 골라보세요!", list(AVATARS.keys()))
+if selected_avatar != st.session_state.avatar:
+    st.session_state.avatar = selected_avatar
+    st.rerun()
 
 st.sidebar.markdown(f"""
 <div class="character-box">
-    <h4>🐱 내 귀여운 고양이 🐱</h4>
-    <h1 style="font-size: 55px; margin: 10px 0;">{equipped_icon}🐱</h1>
+    <h4>{st.session_state.avatar}</h4>
+    <h1 style="font-size: 65px; margin: 10px 0;">{equipped_icon}{current_avatar_icon}</h1>
     <p style="margin:0;"><b>착용 아이템:</b><br>{st.session_state.equipped}</p>
 </div>
 """, unsafe_allow_html=True)
@@ -66,7 +84,7 @@ st.sidebar.markdown(f"""
 st.sidebar.write("---")
 st.sidebar.subheader("👗 옷장 (아이템 착용)")
 selected_item = st.sidebar.selectbox(
-    "착용할 옷을 골라주세요!",
+    "보유 중인 아이템을 착용해보세요!",
     st.session_state.inventory,
     index=st.session_state.inventory.index(st.session_state.equipped) if st.session_state.equipped in st.session_state.inventory else 0
 )
@@ -74,13 +92,13 @@ if selected_item != st.session_state.equipped:
     st.session_state.equipped = selected_item
     st.rerun()
 
-tab1, tab2 = st.tabs(["📝 무한 투두리스트", "🛍️ 코인 옷상점"])
+tab1, tab2 = st.tabs(["📝 무한 투두리스트", "🛍️ 전설의 옷상점"])
 
 with tab1:
     st.subheader("🌈 새로운 목표 추가하기 ✍️")
     
     with st.form("add_todo_form", clear_on_submit=True):
-        new_task = st.text_input("목표를 적고 엔터를 누르거나 버튼을 클릭하세요!", placeholder="예: 파이썬 공부하기 💻🔥")
+        new_task = st.text_input("목표를 적고 엔터를 누르거나 버튼을 클릭하세요!", placeholder="예: 파이썬 코딩 공부하기 💻🔥")
         submitted = st.form_submit_button("➕ 목표 등록하기 ✨")
         if submitted and new_task.strip():
             st.session_state.todos.append({
@@ -120,14 +138,14 @@ with tab1:
                     st.rerun()
 
 with tab2:
-    st.subheader("🛍️ 상점에서 멋진 옷을 사보세요! 🪙")
+    st.subheader("🛍️ 코인을 모아 전설의 아이템을 구매해보세요! 🪙")
     st.write(f"💵 현재 잔액: **{st.session_state.coins} 코인** (목표 1개 완료 시 +50 코인)")
     st.write("---")
     
     cols = st.columns(2)
     for i, (item_name, item_info) in enumerate(SHOP_ITEMS.items()):
         with cols[i % 2]:
-            st.markdown(f"#### {item_name}")
+            st.markdown(f"#### {item_info['icon']} {item_name}")
             st.write(f"가격: **{item_info['price']} 코인** 🪙")
             
             if item_name in st.session_state.inventory:
@@ -140,4 +158,4 @@ with tab2:
                         st.toast(f"🎉 '{item_name}' 구매 성공!", icon="🛍️")
                         st.rerun()
                     else:
-                        st.error("코인이 부족해요! 목표를 더 달성해보세요 💪")
+                        st.error("코인이 부족해요! 목표를 더 완료해보세요 💪")
