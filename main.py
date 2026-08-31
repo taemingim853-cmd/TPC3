@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(to do list 💖", page_icon="🦄", layout="centered")
+st.set_page_config(page_title="블링블링 무한 투두 & 캐릭터 꾸미기 💖", page_icon="🦄", layout="centered")
 
 st.markdown("""
     <style>
